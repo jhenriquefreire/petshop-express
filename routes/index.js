@@ -1,16 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var {Usuario, Servico} = require('../models')
-const sobre =  (req, res, next) => {console.log ('Rodando Middleware do /sobre'), next()}
-
+var { Usuario, Servico } = require('../models')
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
-        const obj = {
-            servicos: await Servico.findAll()
-        }
-    res.render('index', obj);
+  const obj = {
+    servicos: await Servico.findAll()
+  }
+  res.render('index', obj);
 })
+
+const sobre =  (req, res, next) => {console.log ('Rodando Middleware do /sobre'), next()}
 
 router.get('/sobre', sobre, (req, res, next) => res.render('sobre'))
 
@@ -32,11 +32,11 @@ router.post('/cadastro', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => 
     {const usuarioLogin = await Usuario.findOne({
-      where:{login: req.body.email}
+      where:{email: req.body.email}
     })
     if(usuarioLogin && usuarioLogin.senha == req.body.senha) {
-      req.session.estaLogado = true
-      req.session.usuarioLogado = usuarioLogin
+      req.session.login = true
+      req.session.usuario = usuarioLogin
       res.redirect('/admin')
     } else {
       res.render('erro-validacao', { mensagemErro: 'Senha inválida' })

@@ -5,7 +5,7 @@ module.exports = (connection, DataTypes) => {
             autoIncrement: true},  
       nome: {type: DataTypes.STRING(50)},
       email: {type: DataTypes.STRING(30)},
-      Senha: {type: DataTypes.STRING(10)},
+      Senha: {type: DataTypes.STRING(15)},
     },{
         timestamps: true,
         tableName: 'servicos'

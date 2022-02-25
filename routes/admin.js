@@ -1,12 +1,21 @@
 const express = require("express")
-const {Servico} = require('../models')
 const multer = require('multer')
-
+const {Servico} = require('../models')
 
 const router = express.Router()
 const upload = multer({
     dest: 'public/uploads/'
 })
+
+const loginChk = (req, res, next) => {
+  if (!req.session.login) {
+    res.redirect('/login')
+    return
+  }
+  next()
+}
+
+router.use(loginChk)
 
 router.get('/', (req, res) => res.render('admin/dashboard-admin'))
 
@@ -39,7 +48,7 @@ const validaServico = (req, res, next) => {
   next()
 }
 
-router.post('/servicos/criar', upload.single('imgServico'), async (req, res) => {
+router.post('/servicos/criar', validaServico, upload.single('imgServico'), async (req, res) => {
 //    req.body.img = req.file.filename
     await Servico.create(req.body)
     res.redirect('/admin/servicos')
@@ -49,6 +58,7 @@ router.get('/meus-dados', (req, res) => res.render('admin/meus-dados'))
 
 router.get('/servicos/:idServico/remover', async (req, res) => {
     console.log('removendo serviço '+req.params.idServico)
+
     await Servicos.destroy({where: {id: req.params.idServico}})
     res.redirect('/admin/servicos')
 })
@@ -60,14 +70,16 @@ router.get('/servicos/:idServico/editar', async (req, res) =>{
   if (!Servico){
     res.render('erro-validacao', {mensagemErro: 'Serviço não existe'})
   }
-  const obj = {
-    servico: servico
-  }
+  const obj = { servico: servico }
+
     res.render('admin/editar-servico', obj)
 })
 
 router.post('/servicos/:idServico/editar', async (req, res) =>{
-  await Servico.Update(req.body, {where:{id: req.params.idServico}})
+
+  await Servico.Update(req.body, {where:
+    {id: req.params.idServico}
+  })
     res.redirect('/admin/servicos')
 })
 
